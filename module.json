@@ -14,6 +14,6 @@
   "esmodules": ["edit-mutations.js"],
   "url": "https://github.com/flyingsquad/edit-mutations",
   "manifest": "https://raw.githubusercontent.com/flyingsquad/edit-mutations/main/module.json",
-  "version": "1.0.0",
-  "download": "https://github.com/flyingsquad/edit-mutations/archive/refs/tags/v1.0.0.zip"
+  "version": "1.0.1",
+  "download": "https://github.com/flyingsquad/edit-mutations/archive/refs/tags/v1.0.1.zip"
 }

@@ -2,7 +2,6 @@ export class EditMutation {
 	
 	item = null;
 	dlg = null;
-	static dialogs = {};
 
 	constructor(object) {
 		this.item = object;
@@ -11,17 +10,21 @@ export class EditMutation {
 	async dialog() {
 		let content = "";
 		
-		let i = 0;
-		for (let g of this.item.system.grants) {
-			let mutation = "";
-			if (g.mutation)
-				mutation = JSON.stringify(g.mutation, null, 4);
-			let lines = 1;
-			for (let j = 0; j < mutation.length; j++)
-				if (mutation[j] == '\n')
-					lines++;
-			content += `<p style="padding: 0px; margin: 0px;">${g.name}<br><textarea id="g${i}" cols="60" rows="${lines<3?3:lines}">${mutation}</textarea></p>\n`;
-			i++;
+		if (this.item.system.grants && this.item.system.grants.length > 0) {
+			let i = 0;
+			for (let g of this.item.system.grants) {
+				let mutation = "";
+				if (g.mutation)
+					mutation = JSON.stringify(g.mutation, null, 4);
+				let lines = 1;
+				for (let j = 0; j < mutation.length; j++)
+					if (mutation[j] == '\n')
+						lines++;
+				content += `<p style="padding: 0px; margin: 0px;">${g.name}<br><textarea id="g${i}" cols="60" rows="${lines<3?3:lines}">${mutation}</textarea></p>\n`;
+				i++;
+			}
+		} else {
+			content = `<p>${this.item.name} contains no grants.</p>`;
 		}
 		content = `<div style="display: flex; flex-flow: column; overflow: scroll; height: 400px">` + content + `</div>`;
 
@@ -38,8 +41,9 @@ export class EditMutation {
 					label: "OK",
 					default: true,
 					callback: async (event, button, dialog) => {
+						if (!this.item.system.grants || this.item.system.grants.length == 0)
+							return true;
 						let doc = document;
-						let i = 1;
 						let grants = [];
 						for (let i = 0; i < this.item.system.grants.length; i++) {
 							const mut = button.form.elements[`g${i}`].value;
@@ -72,41 +76,28 @@ export class EditMutation {
 				}
 			  ],
 			  submit: result => {
-				EditMutation.dialogs[this.item._id] = null;
 			  },
 			  onClose: () => {
-				EditMutation.dialogs[this.item._id] = null;
 			  },
-			  render: (event, dialog) => {
+			  onRender: (event, dialog) => {
 				  let x = 1;
 				  x++;
 			  }
 			}).render({ force: true });
 		} catch (msg) {
 			ui.notifications.notify(msg);
-			EditMutation.dialogs[this.item._id] = null;
-		} finally {
 		}
-		EditMutation.dialogs[this.item._id] = this.dlg;
 	}
 }
 
 
 Hooks.on("getItemSheetHeaderButtons", (sheet, buttonArray) => {
 	if (game.user.isGM) {
-		if (!sheet.object.system.grants || sheet.object.system.grants.length == 0)
-			return;
-
 		let button = {
 			label: "Mutations",
 			class: 'edit-mutations',
 			icon: 'fas fa-recycle',
 			onclick: () => {
-				let dlg = EditMutation.dialogs[sheet.object._id];
-				if (dlg) {
-					dlg.bringToFront();
-					return;
-				}
 				let em = new EditMutation(sheet.object);
 				if (em)
 					em.dialog();

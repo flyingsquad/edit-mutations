@@ -92,6 +92,8 @@ export class EditMutation {
 
 
 Hooks.on("getHeaderControlsApplicationV2", (sheet, buttonArray) => {
+	if (!sheet.item)
+		return;
 	if (game.user.isGM) {
 		let button = {
 			label: "Mutations",

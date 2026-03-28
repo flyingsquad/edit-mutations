@@ -3,8 +3,8 @@ export class EditMutation {
 	item = null;
 	dlg = null;
 
-	constructor(object) {
-		this.item = object;
+	constructor(item) {
+		this.item = item;
 	}
 
 	async dialog() {
@@ -91,14 +91,14 @@ export class EditMutation {
 }
 
 
-Hooks.on("getItemSheetHeaderButtons", (sheet, buttonArray) => {
+Hooks.on("getHeaderControlsApplicationV2", (sheet, buttonArray) => {
 	if (game.user.isGM) {
 		let button = {
 			label: "Mutations",
 			class: 'edit-mutations',
 			icon: 'fas fa-recycle',
-			onclick: () => {
-				let em = new EditMutation(sheet.object);
+			onClick: () => {
+				let em = new EditMutation(sheet.item);
 				if (em)
 					em.dialog();
 			}

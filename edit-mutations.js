@@ -13,6 +13,12 @@ export class EditMutation {
 		if (this.item.system.grants && this.item.system.grants.length > 0) {
 			let i = 0;
 			for (let g of this.item.system.grants) {
+				let name = g.name;
+				if (!name) {
+					const it = await fromUuid(g.uuid);
+					if (it)
+						name = it.name;
+				}
 				let mutation = "";
 				if (g.mutation)
 					mutation = JSON.stringify(g.mutation, null, 4);
@@ -20,7 +26,7 @@ export class EditMutation {
 				for (let j = 0; j < mutation.length; j++)
 					if (mutation[j] == '\n')
 						lines++;
-				content += `<p style="padding: 0px; margin: 0px;">${g.name}<br><textarea id="g${i}" cols="60" rows="${lines<3?3:lines}">${mutation}</textarea></p>\n`;
+				content += `<p style="padding: 0px; margin: 0px;">${name}<br><textarea id="g${i}" cols="60" rows="${lines<3?3:lines}">${mutation}</textarea></p>\n`;
 				i++;
 			}
 		} else {
